@@ -32,17 +32,36 @@
           ...
         }:
         let
-          release_slug = lib.replaceStrings [ "." ] [ "-" ] config.system.nixos.release;
-          versioned_boot_image = ./theme + "/boot-${release_slug}.png";
-          boot_image =
-            if builtins.pathExists versioned_boot_image then
-              versioned_boot_image
-            else
-              ./theme/boot-unstable.png;
-          theme = pkgs.callPackage ./default.nix { inherit boot_image; };
+          cfg = config.boot.plymouth.win98se.label;
+          boot_label =
+            {
+              release = config.system.nixos.release;
+              none = "";
+              custom = cfg.text;
+            }
+            .${cfg.mode};
+          theme = pkgs.callPackage ./default.nix { inherit boot_label; };
         in
         {
-          boot.plymouth = {
+          options.boot.plymouth.win98se.label = {
+            mode = lib.mkOption {
+              type = lib.types.enum [
+                "release"
+                "none"
+                "custom"
+              ];
+              default = "release";
+              description = "Selects the text below the NixOS logo.";
+            };
+
+            text = lib.mkOption {
+              type = lib.types.str;
+              default = "Unstable";
+              description = "Sets the label when mode is custom.";
+            };
+          };
+
+          config.boot.plymouth = {
             enable = true;
             theme = "win98se-nixos";
             themePackages = [ theme ];

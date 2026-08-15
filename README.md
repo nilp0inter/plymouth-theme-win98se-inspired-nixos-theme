@@ -4,13 +4,10 @@ I made this Plymouth theme to give NixOS a Windows 98 SE-style boot screen.
 It includes custom artwork, a wraparound loading strip, and a matching
 password prompt.
 
-![Boot screen](./theme/boot-unstable.png)
+![Boot screen](./theme/boot-base.png)
 
 The artwork stays at 4:3 on every display. The theme adds black bars when the
 display uses a different aspect ratio.
-
-The module uses `boot-26-05.png` on NixOS 26.05. Other releases use
-`boot-unstable.png`.
 
 ## Password prompt
 
@@ -52,30 +49,29 @@ inputs.win98se-plymouth.url =
   "path:/home/user/src/plymouth-theme-win98se-inspired-nixos-theme";
 ```
 
-## Add artwork for a stable release
+## Boot label
 
-### Generate the image
+The theme adds the label during the package build. The default mode uses
+`config.system.nixos.release`, which contains only the `major.minor` release.
 
-1. Open the [Grok Imagine Image 2.0 playground](https://openrouter.ai/x-ai/grok-imagine-image-2.0#playground).
-2. Upload `theme/boot-unstable.png` as the **Image Reference**.
-3. Set **Resolution** to **2K**.
-4. Set **Aspect Ratio** to **4:3**.
-5. Set **Quality** to **Medium**.
-
-Use this prompt:
-
-```text
-Change the text "Unstable" by "26.05". Do not change anything else.
+```nix
+boot.plymouth.win98se.label.mode = "release";
 ```
 
-For another release, replace `26.05` with its version. Keep the rest of the
-prompt unchanged.
+Remove the label:
 
-### Submit the image
+```nix
+boot.plymouth.win98se.label.mode = "none";
+```
 
-1. Save the generated image as `theme/boot-26-05.png`.
-2. If the release differs, replace `26-05` and use hyphens instead of dots.
-3. Open a pull request that adds the new artwork.
+Use custom text:
+
+```nix
+boot.plymouth.win98se.label = {
+  mode = "custom";
+  text = "Unstable";
+};
+```
 
 ## Build
 
