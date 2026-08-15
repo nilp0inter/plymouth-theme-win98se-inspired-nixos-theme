@@ -33,7 +33,7 @@ password.sprite.SetOpacity(0);
 
 # The Win98-style lower strip is duplicated edge-to-edge. Moving both copies
 # together makes the pattern wrap without a visible jump.
-bar.y = canvas.y + Math.Int(canvas.height * 1742 / 1776 + 0.5);
+bar.y = canvas.y + Math.Int(canvas.height * 1739 / 1776 + 0.5);
 bar.height = canvas.y + canvas.height - bar.y;
 bar.image = Image("progress-strip.png").Scale(canvas.width, bar.height);
 bar.first = Sprite(bar.image);
