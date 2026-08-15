@@ -3,7 +3,8 @@
 
   inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
 
-  outputs = { self, nixpkgs }:
+  outputs =
+    { self, nixpkgs }:
     let
       systems = [
         "aarch64-linux"
@@ -24,9 +25,21 @@
       );
 
       nixosModules.default =
-        { pkgs, ... }:
+        {
+          config,
+          lib,
+          pkgs,
+          ...
+        }:
         let
-          theme = self.packages.${pkgs.stdenv.hostPlatform.system}.default;
+          release_slug = lib.replaceStrings [ "." ] [ "-" ] config.system.nixos.release;
+          versioned_boot_image = ./theme + "/boot-${release_slug}.png";
+          boot_image =
+            if builtins.pathExists versioned_boot_image then
+              versioned_boot_image
+            else
+              ./theme/boot-unstable.png;
+          theme = pkgs.callPackage ./default.nix { inherit boot_image; };
         in
         {
           boot.plymouth = {

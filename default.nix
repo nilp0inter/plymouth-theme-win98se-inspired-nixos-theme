@@ -1,4 +1,7 @@
-{ stdenvNoCC }:
+{
+  stdenvNoCC,
+  boot_image ? ./theme/boot-unstable.png,
+}:
 
 stdenvNoCC.mkDerivation {
   pname = "plymouth-theme-win98se-nixos";
@@ -17,10 +20,10 @@ stdenvNoCC.mkDerivation {
       theme/dot.png \
       theme/password.png \
       theme/progress-strip.png \
-      theme/screenshot.png \
       theme/win98se-nixos.plymouth \
       theme/win98se-nixos.script \
       "$theme_dir/"
+    cp "${boot_image}" "$theme_dir/screenshot.png"
 
     substituteInPlace "$theme_dir/win98se-nixos.plymouth" \
       --replace-fail '@THEME_DIR@' "$theme_dir"

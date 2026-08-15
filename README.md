@@ -4,10 +4,13 @@ I made this Plymouth theme to give NixOS a Windows 98 SE-style boot screen.
 It includes custom artwork, a wraparound loading strip, and a matching
 password prompt.
 
-![Boot screen](./theme/screenshot.png)
+![Boot screen](./theme/boot-unstable.png)
 
 The artwork stays at 4:3 on every display. The theme adds black bars when the
 display uses a different aspect ratio.
+
+The module uses `boot-26-05.png` on NixOS 26.05. Other releases use
+`boot-unstable.png`.
 
 ## Password prompt
 
