@@ -1,0 +1,9 @@
+[Plymouth Theme]
+Name=Win98SE-inspired NixOS
+Description=Win98SE-inspired NixOS boot splash with a wrapped lower bar.
+ModuleName=script
+
+[script]
+ImageDir=@THEME_DIR@
+ScriptFile=@THEME_DIR@/win98se-nixos.script
+ConsoleLogBackgroundColor=0x000000

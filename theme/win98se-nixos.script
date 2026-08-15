@@ -1,0 +1,142 @@
+# Keep both 4:3 images intact. The window background supplies the
+# black letterbox or pillarbox bars on displays with another aspect ratio.
+Window.SetBackgroundTopColor(0, 0, 0);
+Window.SetBackgroundBottomColor(0, 0, 0);
+
+screen.x = Window.GetX();
+screen.y = Window.GetY();
+screen.width = Window.GetWidth();
+screen.height = Window.GetHeight();
+
+if (screen.width * 1776 < screen.height * 2368)
+  {
+    canvas.width = screen.width;
+    canvas.height = Math.Int(screen.width * 1776 / 2368);
+  }
+else
+  {
+    canvas.height = screen.height;
+    canvas.width = Math.Int(screen.height * 2368 / 1776);
+  }
+
+canvas.x = screen.x + Math.Int((screen.width - canvas.width) / 2);
+canvas.y = screen.y + Math.Int((screen.height - canvas.height) / 2);
+
+splash.image = Image("screenshot.png").Scale(canvas.width, canvas.height);
+splash.sprite = Sprite(splash.image);
+splash.sprite.SetPosition(canvas.x, canvas.y, 0);
+
+password.image = Image("password.png").Scale(canvas.width, canvas.height);
+password.sprite = Sprite(password.image);
+password.sprite.SetPosition(canvas.x, canvas.y, 1);
+password.sprite.SetOpacity(0);
+
+# The Win98-style lower strip is duplicated edge-to-edge. Moving both copies
+# together makes the pattern wrap without a visible jump.
+bar.height = Math.Max(4, Math.Int(canvas.height * 0.009));
+bar.y = canvas.y + Math.Int(canvas.height * 0.976);
+bar.image = Image("progress-strip.png").Scale(canvas.width, bar.height);
+bar.first = Sprite(bar.image);
+bar.second = Sprite(bar.image);
+bar.first.SetPosition(canvas.x, bar.y, 2);
+bar.second.SetPosition(canvas.x + canvas.width, bar.y, 2);
+bar.phase = 0;
+
+# Mask horizontal overflow from the wrapped strip so pillarbox bars stay black.
+black.image = Image("black.png");
+left_bar.width = canvas.x - screen.x;
+right_bar.width = screen.x + screen.width - canvas.x - canvas.width;
+
+if (left_bar.width > 0)
+  {
+    left_bar.image = black.image.Scale(left_bar.width, screen.height);
+    left_bar.sprite = Sprite(left_bar.image);
+    left_bar.sprite.SetPosition(screen.x, screen.y, 9000);
+  }
+
+if (right_bar.width > 0)
+  {
+    right_bar.image = black.image.Scale(right_bar.width, screen.height);
+    right_bar.sprite = Sprite(right_bar.image);
+    right_bar.sprite.SetPosition(canvas.x + canvas.width, screen.y, 9000);
+  }
+
+password.dot_source = Image("dot.png");
+password.dot_size = Math.Max(4, Math.Int(canvas.height * 0.009));
+password.dot_image = password.dot_source.Scale(
+  password.dot_size,
+  password.dot_size
+);
+password.dot_gap = Math.Max(3, Math.Int(password.dot_size * 0.7));
+password.dot_y = canvas.y + Math.Int(canvas.height * 0.575);
+password.visible = 0;
+
+fun set_normal_visibility()
+  {
+    splash.sprite.SetOpacity(1);
+    password.sprite.SetOpacity(0);
+    bar.first.SetOpacity(1);
+    bar.second.SetOpacity(1);
+
+    for (index = 0; password.dot[index]; index++)
+      password.dot[index].SetOpacity(0);
+
+    global.password.visible = 0;
+  }
+
+fun display_normal_callback()
+  {
+    set_normal_visibility();
+  }
+
+fun display_password_callback(prompt, bullets)
+  {
+    splash.sprite.SetOpacity(0);
+    password.sprite.SetOpacity(1);
+    bar.first.SetOpacity(0);
+    bar.second.SetOpacity(0);
+    global.password.visible = 1;
+
+    row_width = bullets * password.dot_size;
+    if (bullets > 1)
+      row_width += (bullets - 1) * password.dot_gap;
+    row_x = canvas.x + Math.Int((canvas.width - row_width) / 2);
+
+    for (index = 0; password.dot[index] || index < bullets; index++)
+      {
+        if (!password.dot[index])
+          {
+            password.dot[index] = Sprite(password.dot_image);
+            password.dot[index].SetZ(10000);
+          }
+
+        if (index < bullets)
+          {
+            password.dot[index].SetPosition(
+              row_x + index * (password.dot_size + password.dot_gap),
+              password.dot_y,
+              10000
+            );
+            password.dot[index].SetOpacity(1);
+          }
+        else
+          password.dot[index].SetOpacity(0);
+      }
+  }
+
+fun refresh_callback()
+  {
+    if (!password.visible)
+      {
+        bar.phase += canvas.width / 300;
+        if (bar.phase >= canvas.width)
+          bar.phase -= canvas.width;
+
+        bar.first.SetX(canvas.x + bar.phase - canvas.width);
+        bar.second.SetX(canvas.x + bar.phase);
+      }
+  }
+
+Plymouth.SetDisplayNormalFunction(display_normal_callback);
+Plymouth.SetDisplayPasswordFunction(display_password_callback);
+Plymouth.SetRefreshFunction(refresh_callback);
