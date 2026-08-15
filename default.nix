@@ -13,13 +13,25 @@ let
          width="2368"
          height="1776"
          viewBox="0 0 2368 1776">
+      <defs>
+        <filter id="antialias"
+                x="-5%"
+                y="-5%"
+                width="110%"
+                height="110%"
+                color-interpolation-filters="sRGB">
+          <feGaussianBlur stdDeviation="0.45"/>
+        </filter>
+      </defs>
       <image href="${./theme/boot-base.png}" width="2368" height="1776"/>
       <text x="1808"
             y="1610"
             fill="#000000"
             font-family="Liberation Sans"
             font-size="144"
-            text-anchor="end">${lib.escapeXML boot_label}</text>
+            text-anchor="end"
+            text-rendering="geometricPrecision"
+            filter="url(#antialias)">${lib.escapeXML boot_label}</text>
     </svg>
   '';
 in
