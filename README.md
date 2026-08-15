@@ -52,6 +52,31 @@ inputs.win98se-plymouth.url =
   "path:/home/user/src/plymouth-theme-win98se-inspired-nixos-theme";
 ```
 
+## Add artwork for a stable release
+
+### Generate the image
+
+1. Open the [Grok Imagine Image 2.0 playground](https://openrouter.ai/x-ai/grok-imagine-image-2.0#playground).
+2. Upload `theme/boot-unstable.png` as the **Image Reference**.
+3. Set **Resolution** to **2K**.
+4. Set **Aspect Ratio** to **4:3**.
+5. Set **Quality** to **Medium**.
+
+Use this prompt:
+
+```text
+Change the text "Unstable" by "26.05". Do not change anything else.
+```
+
+For another release, replace `26.05` with its version. Keep the rest of the
+prompt unchanged.
+
+### Submit the image
+
+1. Save the generated image as `theme/boot-26-05.png`.
+2. If the release differs, replace `26-05` and use hyphens instead of dots.
+3. Open a pull request that adds the new artwork.
+
 ## Build
 
 ```console
